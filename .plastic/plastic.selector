@@ -1,0 +1,4 @@
+repository "Game Clock (Chess)@Chriskar@cloud"
+  path "/"
+    br "/main"
+    co "/main"
