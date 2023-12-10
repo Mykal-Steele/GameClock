@@ -15,52 +15,88 @@ public class ClockManager : MonoBehaviour
     public bool clockstopright;
     public float rclockgoing = 0;
     public float lclockgoing = 0;
+    private bool hasStarted = false;
+    private bool isgoing = false;
+    private bool kidisgoing = false;
     public TextMeshProUGUI rplaytimeshow = null;
     public TextMeshProUGUI lplaytimeshow = null;
     public void Start(){
         rplaytimeshow.text = timeee;
         lplaytimeshow.text = timeee;
-        
     }
     public void RightClock(){
         rcplaying = true;
         StartCoroutine("RPlaytimer");
+        hasStarted = true;
     }
     public void LeftClock(){
-        rcplaying = false;
-        StartCoroutine("LPlaytimer");
+        if(hasStarted == true)
+        {
+            rcplaying = false;
+            StartCoroutine("LPlaytimer");
+        }
+    }
+    private IEnumerator SpamPrevent()
+    {
+            print("It work?");
+            yield return new WaitForSeconds(1);
+            print("it done");
+
     }
     // Start is called before the first frame update
     private IEnumerator RPlaytimer()
     {
-        if(rcplaying == true)
+        if(rcplaying == true && rclockgoing == 0)
         {
+            kidisgoing = true;
             rclockgoing +=1;
+            lclockgoing -= 1;
             clockstopright = false;
             while (clockstopright == false)
-            {
-                yield return new WaitForSeconds(1);
+            {        
                 rplaytime -= 1;
                 rseconds = (rplaytime % 60);
                 rminutes = (rplaytime / 60) % 60;
                 rUpdatePlaytimeText();
+                yield return new WaitForSeconds(1);
             }
         }
     }
     private IEnumerator LPlaytimer()
     {
-        if(rcplaying == false)
+        if(rcplaying == false && lclockgoing == -1)
         {
+            kidisgoing = true;
+            rclockgoing -=1;
+            lclockgoing += 1;
             clockstopright = true;
-            while (true)
-            {
-                yield return new WaitForSeconds(1);
+            while (clockstopright == true)
+            {     
                 lplaytime -= 1;
                 lseconds = (lplaytime % 60);
                 lminutes = (lplaytime / 60) % 60;
                 lUpdatePlaytimeText();
+                yield return new WaitForSeconds(1);
             }
         }
+    }
+    private void Update(){
+        if(rclockgoing > 1)
+        {
+            rclockgoing = 1;
+        }
+        if(lclockgoing > 0)
+        {
+            rclockgoing = 0;
+        }
+        if(lclockgoing < -1)
+        {
+            lclockgoing = -1;
+        }
+        if(rclockgoing <0){
+            rclockgoing = 0;
+        }
+        
     }
     void rUpdatePlaytimeText()
     {
