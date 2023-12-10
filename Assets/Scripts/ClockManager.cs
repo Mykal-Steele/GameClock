@@ -16,8 +16,8 @@ public class ClockManager : MonoBehaviour
     public float rclockgoing = 0;
     public float lclockgoing = 0;
     private bool hasStarted = false;
-    private bool isgoing = false;
-    private bool kidisgoing = false;
+    private bool lrunning = false;
+    private bool rrunning = false;
     public TextMeshProUGUI rplaytimeshow = null;
     public TextMeshProUGUI lplaytimeshow = null;
     public void Start(){
@@ -40,15 +40,29 @@ public class ClockManager : MonoBehaviour
     {
             print("It work?");
             yield return new WaitForSeconds(1);
+            lrunning = false;
+            print("it done");
+
+    }
+    private IEnumerator SpamPrevents()
+    {
+            print("It work?");
+            yield return new WaitForSeconds(1);
+            rrunning = false;
             print("it done");
 
     }
     // Start is called before the first frame update
     private IEnumerator RPlaytimer()
     {
-        if(rcplaying == true && rclockgoing == 0)
+        rrunning = true;
+        if(lrunning == true)
+            {
+                StartCoroutine("SpamPrevent");
+            }
+        if(rcplaying == true && rclockgoing == 0 && lrunning == false)
         {
-            kidisgoing = true;
+            
             rclockgoing +=1;
             lclockgoing -= 1;
             clockstopright = false;
@@ -64,9 +78,15 @@ public class ClockManager : MonoBehaviour
     }
     private IEnumerator LPlaytimer()
     {
-        if(rcplaying == false && lclockgoing == -1)
+        lrunning = true;
+        if(rrunning == true)
+            {
+                StartCoroutine("SpamPrevents");
+                
+            }
+        if(rcplaying == false && lclockgoing == -1 && rrunning == false)
         {
-            kidisgoing = true;
+            
             rclockgoing -=1;
             lclockgoing += 1;
             clockstopright = true;
