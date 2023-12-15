@@ -18,11 +18,13 @@ public class ClockManager : MonoBehaviour
     private bool hasStarted = false;
     private bool lrunning = false;
     private bool rrunning = false;
+    public GameObject leftblock;
     public TextMeshProUGUI rplaytimeshow = null;
     public TextMeshProUGUI lplaytimeshow = null;
     public void Start(){
         rplaytimeshow.text = timeee;
         lplaytimeshow.text = timeee;
+
     }
     public void RightClock(){
         rcplaying = true;
@@ -44,6 +46,7 @@ public class ClockManager : MonoBehaviour
             print("it done");
 
     }
+    
     private IEnumerator SpamPrevents()
     {
             print("It work?");
@@ -55,11 +58,7 @@ public class ClockManager : MonoBehaviour
     // Start is called before the first frame update
     private IEnumerator RPlaytimer()
     {
-        rrunning = true;
-        if(lrunning == true)
-            {
-                StartCoroutine("SpamPrevent");
-            }
+        leftblock.SetActive(false);
         if(rcplaying == true && rclockgoing == 0 && lrunning == false)
         {
             
@@ -78,13 +77,7 @@ public class ClockManager : MonoBehaviour
     }
     private IEnumerator LPlaytimer()
     {
-        lrunning = true;
-        if(rrunning == true)
-            {
-                StartCoroutine("SpamPrevents");
-                
-            }
-        if(rcplaying == false && lclockgoing == -1 && rrunning == false)
+        if(rcplaying == false && lclockgoing == -1)
         {
             
             rclockgoing -=1;
@@ -116,7 +109,7 @@ public class ClockManager : MonoBehaviour
         if(rclockgoing <0){
             rclockgoing = 0;
         }
-        
+
     }
     void rUpdatePlaytimeText()
     {
