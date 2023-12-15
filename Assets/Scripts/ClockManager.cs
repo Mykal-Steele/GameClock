@@ -19,12 +19,22 @@ public class ClockManager : MonoBehaviour
     private bool lrunning = false;
     private bool rrunning = false;
     public GameObject leftblock;
+    public GameObject clickHereToStart;
+    public AudioSource clock;
     public TextMeshProUGUI rplaytimeshow = null;
     public TextMeshProUGUI lplaytimeshow = null;
+    public bool hasRunR = false;
+    private bool hasRunL = false;
+    public float spampreventr =0;
+    public float spampreventl = 5f;
+    public GameObject LeftClockTImBg;
+    public GameObject RightClockTimBg;
     public void Start(){
+        LeftClockTImBg.SetActive(false);
+        RightClockTimBg.SetActive(false);
         rplaytimeshow.text = timeee;
         lplaytimeshow.text = timeee;
-
+        clock = GetComponent<AudioSource>();
     }
     public void RightClock(){
         rcplaying = true;
@@ -38,58 +48,89 @@ public class ClockManager : MonoBehaviour
             StartCoroutine("LPlaytimer");
         }
     }
-    private IEnumerator SpamPrevent()
-    {
-            print("It work?");
-            yield return new WaitForSeconds(1);
-            lrunning = false;
-            print("it done");
-
-    }
-    
-    private IEnumerator SpamPrevents()
-    {
-            print("It work?");
-            yield return new WaitForSeconds(1);
-            rrunning = false;
-            print("it done");
-
-    }
     // Start is called before the first frame update
     private IEnumerator RPlaytimer()
     {
-        leftblock.SetActive(false);
-        if(rcplaying == true && rclockgoing == 0 && lrunning == false)
+        clock.Play();
+        
+        clickHereToStart.SetActive(false);
+        
+        if(rcplaying == true && rclockgoing == 0 && lrunning == false && spampreventl > 3f)
         {
+            
+            spampreventl = 0;
+            
+            clockstopright = false;
+            while(clockstopright == false)
+            {
+                yield return new WaitForSeconds(0.1f);
+                spampreventr++;
+                if(spampreventr > 3f){
+                    break;
+                }
+            }
+            hasRunL = false;
+            
             
             rclockgoing +=1;
             lclockgoing -= 1;
-            clockstopright = false;
+            
             while (clockstopright == false)
-            {        
+            {   
+                if(hasRunR == false)
+                {
+                    yield return new WaitForSeconds(0.3f);
+                    hasRunR = true;
+                }
+                leftblock.SetActive(false);
+                RightClockTimBg.SetActive(true);
+                LeftClockTImBg.SetActive(false);
                 rplaytime -= 1;
                 rseconds = (rplaytime % 60);
                 rminutes = (rplaytime / 60) % 60;
                 rUpdatePlaytimeText();
-                yield return new WaitForSeconds(1);
+                yield return new WaitForSeconds(1);      
             }
+            
         }
     }
     private IEnumerator LPlaytimer()
     {
-        if(rcplaying == false && lclockgoing == -1)
+        clock.Play();
+        
+        if(rcplaying == false && lclockgoing == -1 && spampreventr > 3f)
         {
+            
+            spampreventr = 0;
+            clockstopright = true;
+            while(clockstopright == true)
+            {
+                yield return new WaitForSeconds(0.1f);
+                spampreventl++;
+                if(spampreventl > 3f){
+                    break;
+                }
+            }
+            
+            hasRunR = false;
             
             rclockgoing -=1;
             lclockgoing += 1;
-            clockstopright = true;
+            
             while (clockstopright == true)
             {     
+                if(hasRunL == false){
+                    yield return new WaitForSeconds(0.3f);
+                    hasRunL = true;
+                }
+                RightClockTimBg.SetActive(false);
+                LeftClockTImBg.SetActive(true);
                 lplaytime -= 1;
                 lseconds = (lplaytime % 60);
                 lminutes = (lplaytime / 60) % 60;
                 lUpdatePlaytimeText();
                 yield return new WaitForSeconds(1);
+                
             }
         }
     }
@@ -109,14 +150,18 @@ public class ClockManager : MonoBehaviour
         if(rclockgoing <0){
             rclockgoing = 0;
         }
+       
 
     }
     void rUpdatePlaytimeText()
     {
-        rplaytimeshow.text = rminutes.ToString() +" : " + rseconds.ToString();
+        string formattedTime = $"{rminutes:00} : {rseconds:00}";
+        rplaytimeshow.text = formattedTime;
     }
+
     void lUpdatePlaytimeText()
     {
-        lplaytimeshow.text = lminutes.ToString() +" : " + lseconds.ToString();
+        string formattedTime = $"{lminutes:00} : {lseconds:00}";
+        lplaytimeshow.text = formattedTime;
     }
 }
