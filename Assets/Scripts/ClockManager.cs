@@ -17,7 +17,6 @@ public class ClockManager : MonoBehaviour
     public float lclockgoing = 0;
     private bool hasStarted = false;
     private bool lrunning = false;
-    private bool rrunning = false;
     public GameObject leftblock;
     public GameObject clickHereToStart;
     public AudioSource clock;
